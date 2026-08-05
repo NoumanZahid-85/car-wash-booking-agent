@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<meta name="description" content="Sparkle Car Wash — Station OS. One booking engine behind every channel. No double bookings. Ever.">
+<title>Sparkle Car Wash · Station OS</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%23071C25'/%3E%3Cpath d='M20 8C16.4 13.2 13.5 17.2 13.5 21.3a6.5 6.5 0 0 0 13 0c0-4.1-2.9-8.1-6.5-13.3z' fill='%232BD0D9'/%3E%3C/svg%3E">
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem("sparkle-theme");
+      document.documentElement.setAttribute("data-theme", t || "dark");
+    } catch (e) { document.documentElement.setAttribute("data-theme", "dark"); }
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ---------- Design tokens ---------- */
+  [data-theme="dark"] {
+    --bg: #07151C;
+    --bg-glow-a: rgba(43, 208, 217, 0.09);
+    --bg-glow-b: rgba(242, 179, 61, 0.05);
+    --surface: #0C1F28;
+    --surface-2: #102A35;
+    --raise: rgba(255, 255, 255, 0.028);
+    --line: rgba(152, 200, 214, 0.14);
+    --line-strong: rgba(152, 200, 214, 0.26);
+    --text: #E9F4F7;
+    --text-2: #9FBBC7;
+    --text-3: #6C8B98;
+    --aqua: #2BD0D9;
+    --aqua-2: #17A6B0;
+    --aqua-deep: #0E7B84;
+    --aqua-tint: rgba(43, 208, 217, 0.12);
+    --gold: #F2B33D;
+    --held: #F0A426;
+    --held-ink: #2A1A02;
+    --wa: #25D366;
+    --wa-ink: #123F2A;
+    --vo: #A78BFF;
+    --vo-ink: #241A4A;
+    --danger: #FF7A6B;
+    --danger-bg: rgba(255, 122, 107, 0.14);
+    --shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.7);
+    --shadow-sm: 0 10px 30px -14px rgba(0, 0, 0, 0.5);
+    --glow-cell: 0 0 0 1px rgba(43, 208, 217, 0.0), 0 14px 34px -16px rgba(43, 208, 217, 0.55);
+  }
+  [data-theme="light"] {
+    --bg: #F1F6F8;
+    --bg-glow-a: rgba(43, 180, 190, 0.14);
+    --bg-glow-b: rgba(240, 164, 38, 0.10);
+    --surface: #FFFFFF;
+    --surface-2: #FFFFFF;
+    --raise: rgba(11, 34, 48, 0.02);
+    --line: #D8E5EA;
+    --line-strong: #C2D6DE;
+    --text: #0B2230;
+    --text-2: #33505F;
+    --text-3: #6B8491;
+    --aqua: #0E8C96;
+    --aqua-2: #0B6F78;
+    --aqua-deep: #0B6F78;
+    --aqua-tint: #E2F3F4;
+    --gold: #E08E14;
+    --held: #F2A93B;
+    --held-ink: #4A2E06;
+    --wa: #1B9E62;
+    --wa-ink: #E3F6EC;
+    --vo: #7A5AF8;
+    --vo-ink: #EFEAFE;
+    --danger: #E0483E;
+    --danger-bg: #FDEEED;
+    --shadow: 0 24px 60px -30px rgba(11, 34, 48, 0.35);
+    --shadow-sm: 0 10px 30px -18px rgba(11, 34, 48, 0.25);
+    --glow-cell: 0 14px 30px -18px rgba(14, 140, 150, 0.55);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    font-family: "Inter", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    transition: background .25s ease, color .25s ease;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background:
+      radial-gradient(1100px 480px at 88% -12%, var(--bg-glow-a), transparent 60%),
+      radial-gradient(900px 460px at -8% 6%, var(--bg-glow-b), transparent 55%);
+  }
+
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+  input, select { font: inherit; color: inherit; }
+
+  :focus-visible { outline: 2px solid var(--aqua); outline-offset: 2px; border-radius: 8px; }
+
+  ::selection { background: var(--aqua-tint); }
+
+  /* ---------- Top bar ---------- */
+  .topbar {
+    position: sticky; top: 0; z-index: 30;
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px clamp(16px, 3.6vw, 44px);
+    background: color-mix(in srgb, var(--bg) 78%, transparent);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .brand { display: flex; align-items: center; gap: 12px; }
+
+  .brand-mark { position: relative; width: 38px; height: 38px; flex: none; overflow: hidden; border-radius: 11px; box-shadow: var(--shadow-sm); }
+  .brand-mark svg { display: block; width: 100%; height: 100%; }
+  .brand-mark::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(115deg, transparent 34%, rgba(255,255,255,.7) 48%, transparent 62%);
+    transform: translateX(-120%);
+    animation: shimmer 1.3s ease-out .25s forwards;
+  }
+  @keyframes shimmer { to { transform: translateX(120%); } }
+
+  .brand-name { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 16px; letter-spacing: -0.01em; line-height: 1.1; }
+  .brand-sub { font-size: 10.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--text-3); }
+
+  .topbar-spacer { flex: 1; }
+
+  .live-pill {
+    display: inline-flex; align-items: center; gap: 9px;
+    font-family: "IBM Plex Mono", monospace; font-size: 11.5px; color: var(--text-2);
+    border: 1px solid var(--line); border-radius: 999px; padding: 7px 13px;
+    background: var(--surface); white-space: nowrap;
+  }
+  .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--wa); box-shadow: 0 0 0 0 rgba(37, 211, 102, .5); animation: pulse 2.4s infinite; }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, .5); }
+    70% { box-shadow: 0 0 0 7px rgba(37, 211, 102, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+  }
+
+  .icon-btn {
+    width: 38px; height: 38px; border-radius: 11px; border: 1px solid var(--line);
+    display: grid; place-items: center; color: var(--text-2); background: var(--surface);
+    transition: border-color .15s ease, color .15s ease, transform .1s ease;
+  }
+  .icon-btn:hover { border-color: var(--line-strong); color: var(--text); }
+  .icon-btn:active { transform: scale(0.96); }
+  .icon-btn svg { width: 17px; height: 17px; }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: linear-gradient(180deg, var(--aqua), var(--aqua-2));
+    color: #052229; font-weight: 700; font-size: 13.5px; letter-spacing: .01em;
+    border-radius: 12px; padding: 10px 16px; box-shadow: var(--glow-cell);
+    transition: transform .12s ease, box-shadow .15s ease, filter .15s ease;
+  }
+  .btn-primary:hover { transform: translateY(-1px); filter: brightness(1.06); box-shadow: 0 0 0 3px var(--aqua-tint), var(--glow-cell); }
+  .btn-primary:active { transform: translateY(0); }
+
+  /* ---------- Layout ---------- */
+  .wrap { max-width: 1240px; margin: 0 auto; padding: clamp(28px, 4.6vw, 52px) clamp(16px, 3.6vw, 44px) 70px; }
+
+  .hero { max-width: 720px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 11px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--aqua);
+  }
+  .eyebrow::before { content: ""; width: 22px; height: 2px; border-radius: 2px; background: var(--gold); }
+  h1 { font-family: "Space Grotesk", sans-serif; font-size: clamp(30px, 4.6vw, 46px); font-weight: 700; letter-spacing: -0.025em; margin: 12px 0 10px; line-height: 1.05; }
+  h1 .muted { color: var(--text-3); }
+  .page-sub { color: var(--text-2); font-size: 15.5px; max-width: 60ch; }
+
+  .guards { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+  .guard {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12.5px; font-weight: 500; color: var(--text-2);
+    border: 1px solid var(--line); border-radius: 999px; padding: 6px 13px; background: var(--surface);
+  }
+  .guard svg { width: 14px; height: 14px; color: var(--gold); flex: none; }
+
+  /* ---------- Stats ---------- */
+  .stats { display: grid; gap: 14px; margin-top: 30px; grid-template-columns: repeat(2, 1fr); }
+  @media (min-width: 820px) { .stats { grid-template-columns: repeat(4, 1fr); } }
+
+  .stat {
+    position: relative; overflow: hidden;
+    background: linear-gradient(180deg, var(--raise), transparent), var(--surface);
+    border: 1px solid var(--line); border-radius: 18px; padding: 18px 20px 16px;
+    transition: border-color .15s ease, transform .15s ease;
+  }
+  .stat:hover { border-color: var(--line-strong); }
+  .stat::after {
+    content: ""; position: absolute; top: 0; left: 20px; right: 20px; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.16), transparent);
+  }
+  .stat-num { font-family: "Space Grotesk", sans-serif; font-size: 34px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+  .stat-label { margin-top: 10px; font-size: 10.5px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--text-3); display: flex; align-items: center; gap: 7px; }
+  .stat-label .dot { width: 8px; height: 8px; border-radius: 3px; flex: none; }
+  .stat-sub { margin-top: 5px; font-size: 12px; color: var(--text-3); }
+
+  /* ---------- Section ---------- */
+  .section { margin-top: 44px; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .section h2 { font-family: "Space Grotesk", sans-serif; font-size: 21px; font-weight: 700; letter-spacing: -0.01em; }
+  .section-note { font-size: 13px; color: var(--text-3); }
+
+  /* ---------- Week grid ---------- */
+  .grid-shell {
+    margin-top: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 20px;
+    overflow: hidden; box-shadow: var(--shadow-sm);
+  }
+  .legend { display: flex; gap: 20px; flex-wrap: wrap; padding: 16px 20px 0; }
+  .legend-item { display: inline-flex; align-items: center; gap: 9px; font-size: 12.5px; color: var(--text-2); }
+  .legend-swatch { width: 15px; height: 15px; border-radius: 5px; flex: none; }
+  .legend-swatch--open { border: 1.5px dashed var(--aqua); background: transparent; }
+  .legend-swatch--held { background: linear-gradient(165deg, #FFC46B, var(--held)); }
+  .legend-swatch--booked { background: linear-gradient(165deg, #1FC8D2, var(--aqua-deep)); }
+
+  .grid-scroll { overflow-x: auto; padding: 18px 20px; scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+
+  .week-grid { display: grid; grid-template-columns: repeat(var(--cols, 6), minmax(118px, 1fr)); gap: 10px; min-width: 0; }
+
+  .day-head { padding: 4px 4px 10px; }
+  .day-head .dw { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 14px; }
+  .day-head .dm { font-size: 12px; color: var(--text-3); font-family: "IBM Plex Mono", monospace; }
+  .day-head .today-chip {
+    display: inline-block; margin-top: 7px; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--aqua); background: var(--aqua-tint); border-radius: 999px; padding: 2px 9px;
+  }
+  .day-head.is-today .dw { color: var(--aqua); }
+
+  .cell {
+    display: flex; flex-direction: column; gap: 3px; align-items: flex-start;
+    border-radius: 14px 14px 18px 18px; padding: 11px 12px; min-height: 60px;
+    text-align: left; position: relative; overflow: hidden;
+    transition: transform .12s ease, box-shadow .15s ease, border-color .15s ease;
+  }
+  /* wet gloss highlight across the top of every droplet */
+  .cell::before {
+    content: ""; position: absolute; top: 0; left: 14%; right: 14%; height: 42%;
+    background: linear-gradient(180deg, rgba(255,255,255,.34), transparent);
+    border-radius: 0 0 55% 55%; opacity: 0; transition: opacity .15s ease; pointer-events: none;
+  }
+  .cell:hover { transform: translateY(-2px); }
+  .cell:hover::before { opacity: 1; }
+
+  .cell .t { font-family: "IBM Plex Mono", monospace; font-size: 14px; font-weight: 500; }
+  .cell .s { font-size: 11px; font-weight: 600; letter-spacing: .05em; }
+
+  .cell--open { background: transparent; border: 1.5px dashed var(--line-strong); }
+  .cell--open .t { color: var(--aqua); }
+  .cell--open .s { color: var(--text-3); text-transform: uppercase; letter-spacing: .1em; }
+  .cell--open:hover { border-color: var(--aqua); box-shadow: var(--glow-cell); background: var(--aqua-tint); }
+
+  .cell--held { background: linear-gradient(165deg, #FFC46B, var(--held)); border: 1px solid rgba(240,164,38,.5); box-shadow: 0 12px 28px -16px rgba(240,164,38,.5); }
+  .cell--held .t, .cell--held .s { color: var(--held-ink); }
+  .cell--held .s { text-transform: uppercase; letter-spacing: .1em; opacity: .72; }
+
+  .cell--booked { background: linear-gradient(165deg, #1FC8D2, var(--aqua-deep)); border: 1px solid rgba(23,166,176,.5); box-shadow: 0 12px 28px -16px rgba(23,166,176,.55); }
+  .cell--booked .t { color: #EAF7F8; }
+  .cell--booked .s { color: #CFF0F3; font-weight: 500; }
+  .cell--booked.has-name .t { font-size: 13px; }
+
+  .grid-foot {
+    padding: 13px 20px 15px; border-top: 1px solid var(--line);
+    font-size: 12.5px; color: var(--text-3); display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+
+  /* ---------- Bookings ---------- */
+  .toolbar { margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .search {
+    flex: 1; min-width: 220px; display: flex; align-items: center; gap: 10px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px;
+    transition: border-color .15s ease;
+  }
+  .search:focus-within { border-color: var(--aqua); }
+  .search input { border: 0; outline: 0; width: 100%; background: transparent; font-size: 14px; color: var(--text); }
+  .search input::placeholder { color: var(--text-3); }
+  .search svg { color: var(--text-3); flex: none; }
+
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip {
+    font-size: 13px; font-weight: 500; color: var(--text-2);
+    border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 8px 14px;
+    transition: all .12s ease;
+  }
+  .chip:hover { border-color: var(--line-strong); color: var(--text); }
+  .chip.is-active { background: var(--text); border-color: var(--text); color: var(--bg); font-weight: 600; }
+
+  .table-shell {
+    margin-top: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 20px;
+    overflow: hidden; overflow-x: auto; box-shadow: var(--shadow-sm);
+  }
+  table { width: 100%; border-collapse: collapse; min-width: 740px; }
+  thead th {
+    text-align: left; font-size: 10.5px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--text-3); padding: 13px 18px; border-bottom: 1px solid var(--line);
+  }
+  tbody td { padding: 14px 18px; border-bottom: 1px solid color-mix(in srgb, var(--line) 60%, transparent); font-size: 14px; vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr { transition: background .1s ease; }
+  tbody tr:hover { background: var(--aqua-tint); }
+
+  .mono { font-family: "IBM Plex Mono", monospace; font-size: 13px; }
+  .name { font-weight: 600; }
+  .vehicle { color: var(--text-2); }
+
+  .badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; border-radius: 999px; padding: 4px 11px; }
+  .badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; }
+  .badge--whatsapp { color: var(--wa); background: var(--wa-ink); }
+  .badge--whatsapp::before { background: var(--wa); }
+  .badge--voice { color: var(--vo); background: var(--vo-ink); }
+  .badge--voice::before { background: var(--vo); }
+
+  .created { color: var(--text-3); font-size: 13px; white-space: nowrap; }
+
+  .empty { padding: 46px 20px; text-align: center; color: var(--text-3); }
+  .empty .big { font-family: "Space Grotesk", sans-serif; font-size: 17px; font-weight: 600; color: var(--text-2); margin-bottom: 4px; }
+
+  /* ---------- Modal ---------- */
+  .overlay {
+    position: fixed; inset: 0; z-index: 50; display: none; align-items: flex-start; justify-content: center;
+    padding: 24px; overflow-y: auto; background: rgba(2, 10, 14, 0.6); backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  .overlay.is-open { display: flex; animation: fade .18s ease; }
+  @keyframes fade { from { opacity: 0; } }
+
+  .modal {
+    background: var(--surface-2); border: 1px solid var(--line-strong); border-radius: 20px;
+    width: 100%; max-width: 490px; margin: auto; box-shadow: var(--shadow); overflow: hidden;
+    animation: rise .22s ease;
+  }
+  @keyframes rise { from { transform: translateY(16px); opacity: 0; } }
+
+  .modal-head { padding: 22px 24px 0; display: flex; align-items: flex-start; gap: 12px; }
+  .modal-head h3 { font-family: "Space Grotesk", sans-serif; font-size: 19px; font-weight: 700; letter-spacing: -0.01em; }
+  .modal-head p { font-size: 13px; color: var(--text-2); margin-top: 4px; }
+  .modal-close {
+    margin-left: auto; width: 32px; height: 32px; border-radius: 10px; flex: none;
+    display: grid; place-items: center; color: var(--text-3); font-size: 18px; line-height: 1;
+    transition: background .12s ease, color .12s ease;
+  }
+  .modal-close:hover { background: var(--aqua-tint); color: var(--text); }
+
+  .modal-body { padding: 20px 24px; }
+  .modal-foot { padding: 0 24px 22px; display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 12px; font-weight: 600; letter-spacing: .04em; color: var(--text-2); margin-bottom: 6px; }
+  .field input, .field select {
+    width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+    padding: 10px 12px; font-size: 14px; color: var(--text); transition: border-color .12s ease;
+  }
+  .field input:focus, .field select:focus { outline: 0; border-color: var(--aqua); }
+  .field input::placeholder { color: var(--text-3); }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .seg label {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    border: 1px solid var(--line); border-radius: 12px; padding: 10px; font-size: 13.5px; font-weight: 500;
+    cursor: pointer; transition: all .12s ease; color: var(--text-2);
+  }
+  .seg input { position: absolute; opacity: 0; pointer-events: none; }
+  .seg label:has(input:checked) { border-color: var(--aqua); color: var(--aqua); background: var(--aqua-tint); font-weight: 600; }
+
+  .btn { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; border-radius: 12px; padding: 11px 18px; transition: all .12s ease; }
+  .btn-ghost { border: 1px solid var(--line); color: var(--text-2); background: transparent; }
+  .btn-ghost:hover { border-color: var(--line-strong); color: var(--text); }
+  .btn[disabled] { opacity: .5; cursor: not-allowed; transform: none !important; filter: none !important; }
+
+  .btn-danger { background: var(--danger-bg); color: var(--danger); border: 1px solid color-mix(in srgb, var(--danger) 35%, transparent); font-weight: 600; }
+  .btn-danger:hover { filter: brightness(1.08); }
+
+  .slot-card { display: flex; align-items: center; gap: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; margin-bottom: 16px; }
+  .slot-card .when { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 16px; }
+  .slot-card .id { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--text-3); }
+  .slot-card .state { margin-left: auto; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; }
+
+  .held-banner {
+    display: flex; align-items: center; gap: 10px; margin-top: 14px;
+    background: color-mix(in srgb, var(--gold) 12%, transparent); border: 1px solid color-mix(in srgb, var(--gold) 40%, transparent);
+    color: var(--gold); border-radius: 12px; padding: 12px 14px; font-size: 13.5px; font-weight: 500;
+  }
+
+  .dl { display: grid; grid-template-columns: auto 1fr; gap: 8px 20px; font-size: 14px; margin: 4px 0 16px; }
+  .dl dt { color: var(--text-3); font-size: 12.5px; }
+  .dl dd { font-weight: 500; }
+  .dl dd .mono { font-weight: 400; }
+
+  /* ---------- Toast ---------- */
+  .toasts { position: fixed; right: 20px; bottom: 20px; z-index: 80; display: flex; flex-direction: column; gap: 10px; max-width: 360px; }
+  .toast {
+    background: var(--surface-2); color: var(--text); border: 1px solid var(--line-strong); border-radius: 14px;
+    padding: 13px 16px; font-size: 13.5px; box-shadow: var(--shadow);
+    display: flex; gap: 10px; align-items: flex-start; animation: rise .2s ease;
+  }
+  .toast .dot { width: 9px; height: 9px; border-radius: 50%; margin-top: 5px; flex: none; }
+  .toast--ok .dot { background: var(--wa); }
+  .toast--err .dot { background: var(--danger); }
+  .toast--info .dot { background: var(--aqua); }
+  .toast.leaving { animation: fade .25s ease forwards; }
+
+  /* ---------- Error / loading ---------- */
+  .err-banner {
+    display: none; margin-top: 22px; background: var(--danger-bg); border: 1px solid color-mix(in srgb, var(--danger) 35%, transparent);
+    color: var(--danger); border-radius: 14px; padding: 13px 16px; font-size: 13.5px; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  .err-banner.is-shown { display: flex; }
+  .err-banner .btn-retry { margin-left: auto; border: 1px solid color-mix(in srgb, var(--danger) 45%, transparent); color: var(--danger); border-radius: 10px; padding: 6px 14px; font-weight: 600; font-size: 13px; }
+  .err-banner .btn-retry:hover { background: var(--danger-bg); }
+
+  .skeleton { margin-top: 30px; }
+  .skeleton-stats { display: grid; gap: 14px; grid-template-columns: repeat(2, 1fr); }
+  @media (min-width: 820px) { .skeleton-stats { grid-template-columns: repeat(4, 1fr); } }
+  .sk { background: linear-gradient(90deg, var(--surface) 25%, var(--surface-2) 50%, var(--surface) 75%); background-size: 200% 100%; animation: sk 1.3s infinite; border-radius: 18px; }
+  @keyframes sk { to { background-position: -200% 0; } }
+  .sk-tile { height: 108px; }
+  .sk-grid { margin-top: 44px; height: 300px; }
+  .sk-table { margin-top: 44px; height: 180px; }
+
+  .foot { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line); display: flex; gap: 8px; flex-wrap: wrap; justify-content: space-between; color: var(--text-3); font-size: 12.5px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 40 40">
+        <defs>
+          <linearGradient id="drop" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#2BD0D9"/><stop offset="1" stop-color="#0E7B84"/>
+          </linearGradient>
+        </defs>
+        <rect width="40" height="40" rx="11" fill="#071C25"/>
+        <path d="M20 7.5C16.3 12.8 13.4 16.9 13.4 21.1a6.6 6.6 0 0 0 13.2 0c0-4.2-2.9-8.3-6.6-13.6z" fill="url(#drop)"/>
+        <path d="M16 21.4a1.8 1.8 0 0 1 3.6 0c0 1-.9 1.8-1.8 1.8s-1.8-.8-1.8-1.8z" fill="#EAF7F8"/>
+        <path d="M28.5 8.5l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9z" fill="#F2B33D"/>
+      </svg>
+    </div>
+    <div>
+      <div class="brand-name">Sparkle Car Wash</div>
+      <div class="brand-sub">Station OS</div>
+    </div>
+  </div>
+  <div class="topbar-spacer"></div>
+  <div class="live-pill" title="Fetches live data from the booking engine">
+    <span class="live-dot"></span><span id="live-text">Live</span>
+  </div>
+  <button class="icon-btn" id="btn-theme" type="button" aria-label="Toggle dark mode" title="Toggle theme">
+    <svg id="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    <svg id="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.4M12 19.6V22M2 12h2.4M19.6 12H22M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M4.9 19.1l1.7-1.7M17.4 6.6l1.7-1.7"/></svg>
+  </button>
+  <button class="btn-primary" id="btn-test" type="button">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+    Test a booking
+  </button>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <span class="eyebrow">Sparkle Car Wash · Station</span>
+    <h1>The wash grid<span class="muted">.</span></h1>
+    <p class="page-sub">One booking engine behind every channel. A slot held here disappears from WhatsApp and Voice in the same instant — that is the whole point.</p>
+    <div class="guards" aria-label="System guarantees">
+      <span class="guard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.5-4.8 2.5.9-5.4L4.2 7.7l5.4-.8z"/></svg>
+        One engine · three channels
+      </span>
+      <span class="guard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        Row-locked with FOR UPDATE
+      </span>
+      <span class="guard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+        Holds recycle in 10 min
+      </span>
+    </div>
+  </section>
+
+  <div class="err-banner" id="err-banner" role="alert">
+    <span id="err-text"></span>
+    <button class="btn-retry" id="btn-retry" type="button">Retry</button>
+  </div>
+
+  <div class="skeleton" id="skeleton" aria-hidden="true">
+    <div class="skeleton-stats">
+      <div class="sk sk-tile"></div><div class="sk sk-tile"></div><div class="sk sk-tile"></div><div class="sk sk-tile"></div>
+    </div>
+    <div class="sk sk-grid"></div>
+    <div class="sk sk-table"></div>
+  </div>
+
+  <div id="app" style="display:none">
+    <section class="stats" aria-label="Summary">
+      <div class="stat">
+        <div class="stat-num" id="stat-today">–</div>
+        <div class="stat-label"><span class="dot" style="background:var(--aqua)"></span>Booked today</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="stat-held">–</div>
+        <div class="stat-label"><span class="dot" style="background:var(--gold)"></span>Held right now</div>
+        <div class="stat-sub">releases in 10 min if unanswered</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="stat-week">–</div>
+        <div class="stat-label"><span class="dot" style="background:var(--aqua-deep)"></span>Booked this week</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="stat-open">–</div>
+        <div class="stat-label"><span class="dot" style="background:var(--text-3)"></span>Open slots</div>
+      </div>
+    </section>
+
+    <section aria-labelledby="grid-title">
+      <div class="section">
+        <h2 id="grid-title">The wash grid</h2>
+        <span class="section-note">Next six service days · Sunday closed</span>
+      </div>
+      <div class="grid-shell">
+        <div class="legend" aria-hidden="true">
+          <span class="legend-item"><span class="legend-swatch legend-swatch--open"></span>Open</span>
+          <span class="legend-item"><span class="legend-swatch legend-swatch--held"></span>Held</span>
+          <span class="legend-item"><span class="legend-swatch legend-swatch--booked"></span>Booked</span>
+        </div>
+        <div class="grid-scroll">
+          <div class="week-grid" id="week-grid" style="--cols:6"></div>
+        </div>
+        <div class="grid-foot">
+          <span>Click an open slot to book it.</span>
+          <span style="margin-left:auto">Click a held or booked slot for details</span>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="bookings-title">
+      <div class="section">
+        <h2 id="bookings-title">Live bookings</h2>
+        <span class="section-note">Every confirmation the agents have made</span>
+      </div>
+      <div class="toolbar">
+        <div class="search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="search" type="search" placeholder="Search by name, phone or vehicle…" autocomplete="off">
+        </div>
+        <div class="chips" id="channel-chips" role="group" aria-label="Filter by channel">
+          <button class="chip is-active" data-channel="all" type="button">All</button>
+          <button class="chip" data-channel="whatsapp" type="button">WhatsApp</button>
+          <button class="chip" data-channel="voice" type="button">Voice</button>
+        </div>
+      </div>
+      <div class="table-shell">
+        <table>
+          <thead>
+            <tr><th>When</th><th>Customer</th><th>Phone</th><th>Vehicle</th><th>Channel</th><th>Booked at</th></tr>
+          </thead>
+          <tbody id="bookings-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <span>Sparkle Car Wash · Station OS v1.0</span>
+      <span>Row-locked with <span style="font-family:var(--font-mono, 'IBM Plex Mono')">FOR&nbsp;UPDATE</span> — no double bookings, ever</span>
+    </footer>
+  </div>
+</main>
+
+<!-- Slot detail modal -->
+<div class="overlay" id="overlay-slot" role="dialog" aria-modal="true" aria-labelledby="slot-title">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h3 id="slot-title">Slot details</h3>
+        <p>A single slot on the grid, as the engine sees it.</p>
+      </div>
+      <button class="modal-close" data-close="overlay-slot" aria-label="Close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="slot-card">
+        <div>
+          <div class="when" id="slot-when">–</div>
+          <div class="id">Slot #<span id="slot-id">–</span></div>
+        </div>
+        <div class="state" id="slot-state">–</div>
+      </div>
+      <dl class="dl" id="slot-details"></dl>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" data-close="overlay-slot" type="button">Close</button>
+      <button class="btn btn-danger" id="btn-free" type="button">Free this slot</button>
+    </div>
+  </div>
+</div>
+
+<!-- Test booking modal -->
+<div class="overlay" id="overlay-test" role="dialog" aria-modal="true" aria-labelledby="test-title">
+  <div class="modal">
+    <form id="test-form" novalidate>
+      <div class="modal-head">
+        <div>
+          <h3 id="test-title">Test a booking</h3>
+          <p>Runs the same hold&nbsp;→&nbsp;confirm flow the agents use — real engine, real row locks.</p>
+        </div>
+        <button class="modal-close" type="button" data-close="overlay-test" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="field-row">
+          <div class="field">
+            <label for="t-date">Date</label>
+            <select id="t-date"></select>
+          </div>
+          <div class="field">
+            <label for="t-time">Time</label>
+            <select id="t-time"><option value="">Choose…</option></select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="t-name">Customer name</label>
+            <input id="t-name" type="text" placeholder="e.g. Ahmed Raza" autocomplete="name">
+          </div>
+          <div class="field">
+            <label for="t-phone">Phone</label>
+            <input id="t-phone" type="tel" placeholder="+92 300 0000000" autocomplete="tel">
+          </div>
+        </div>
+        <div class="field">
+          <label for="t-vehicle">Vehicle</label>
+          <input id="t-vehicle" type="text" placeholder="e.g. Toyota Corolla, SUV, Civic" autocomplete="off">
+        </div>
+        <div class="field">
+          <label>Channel</label>
+          <div class="seg" role="radiogroup" aria-label="Booking channel">
+            <label><input type="radio" name="channel" value="whatsapp" checked><span>WhatsApp</span></label>
+            <label><input type="radio" name="channel" value="voice"><span>Voice</span></label>
+          </div>
+        </div>
+        <div class="held-banner" id="held-banner" style="display:none"></div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-ghost" type="button" data-close="overlay-test">Cancel</button>
+        <button class="btn btn-primary" id="btn-hold" type="button">Hold slot</button>
+        <button class="btn btn-primary" id="btn-confirm" type="button" disabled>Confirm booking</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script>
+(() => {
+  "use strict";
+
+  const $ = (sel) => document.querySelector(sel);
+  const el = (tag, cls, html) => {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (html !== undefined) n.innerHTML = html;
+    return n;
+  };
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => (
+    { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]
+  ));
+
+  let DATA = null;
+  let activeChannel = "all";
+
+  // ---------- theme ----------
+  const root = document.documentElement;
+  function applyTheme(t) {
+    root.setAttribute("data-theme", t);
+    const dark = t === "dark";
+    $("#icon-moon").style.display = dark ? "none" : "";
+    $("#icon-sun").style.display = dark ? "" : "none";
+    try { localStorage.setItem("sparkle-theme", t); } catch (e) {}
+  }
+  applyTheme(root.getAttribute("data-theme") === "light" ? "light" : "dark");
+  $("#btn-theme").addEventListener("click", () => {
+    applyTheme(root.getAttribute("data-theme") === "dark" ? "light" : "dark");
+  });
+
+  // ---------- toast ----------
+  function toast(msg, kind = "info") {
+    const t = el("div", `toast toast--${kind}`, `<span class="dot"></span><span>${msg}</span>`);
+    $("#toasts").appendChild(t);
+    setTimeout(() => { t.classList.add("leaving"); setTimeout(() => t.remove(), 260); }, 3600);
+  }
+
+  async function api(path, opts = {}) {
+    const res = await fetch(path, {
+      headers: { "Content-Type": "application/json" },
+      ...opts,
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status} on ${path}`);
+    return res.json();
+  }
+
+  // ---------- data load ----------
+  async function load() {
+    try {
+      DATA = await api("/admin/data");
+      $("#err-banner").classList.remove("is-shown");
+      $("#skeleton").style.display = "none";
+      $("#app").style.display = "";
+      render();
+      $("#live-text").textContent = `Live · ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+    } catch (err) {
+      $("#err-text").textContent = `Couldn't reach the booking engine — ${err.message}. Is uvicorn running on port 8100?`;
+      $("#err-banner").classList.add("is-shown");
+    }
+  }
+
+  // ---------- week grid ----------
+  function renderGrid() {
+    const grid = $("#week-grid");
+    grid.style.setProperty("--cols", DATA.days.length);
+    grid.innerHTML = "";
+
+    for (const day of DATA.days) {
+      const head = el("div", "day-head" + (day.is_today ? " is-today" : ""));
+      const chip = day.is_today ? '<span class="today-chip">Today</span>' : "";
+      head.innerHTML = `<div class="dw">${day.weekday}</div><div class="dm">${day.month_day}</div>${chip}`;
+      grid.appendChild(head);
+    }
+
+    for (const day of DATA.days) {
+      for (const s of day.slots) {
+        const btn = el("button", `cell cell--${s.status}`);
+        btn.type = "button";
+        const name = s.status === "booked" && s.name ? esc(s.name.split(" ")[0]) : "";
+        btn.classList.toggle("has-name", !!name);
+        btn.setAttribute("data-id", s.id);
+        btn.setAttribute("data-status", s.status);
+        btn.innerHTML =
+          `<span class="t">${s.time}</span>` +
+          (s.status === "booked"
+            ? `<span class="s">${name ? name : "Booked"}</span>`
+            : `<span class="s">${s.status === "held" ? "Held" : "Open"}</span>`);
+        btn.addEventListener("click", () => onCellClick(s, day));
+        grid.appendChild(btn);
+      }
+    }
+  }
+
+  function onCellClick(slot, day) {
+    if (slot.status === "available") openTestModal(day.iso, slot.time);
+    else openSlotModal(slot, day);
+  }
+
+  // ---------- stats ----------
+  function renderStats() {
+    const s = DATA.stats;
+    $("#stat-today").textContent = s.today_bookings;
+    $("#stat-held").textContent = s.held;
+    $("#stat-week").textContent = s.booked_week;
+    $("#stat-open").textContent = s.open_week;
+  }
+
+  // ---------- bookings table ----------
+  function renderBookings() {
+    const q = ($("#search").value || "").trim().toLowerCase();
+    const rows = DATA.bookings.filter((b) => {
+      const inChannel = activeChannel === "all" || b.channel === activeChannel;
+      const hay = [b.customer_name, b.phone_number, b.vehicle_type, b.slot_date, b.slot_time]
+        .join(" ").toLowerCase();
+      return inChannel && (!q || hay.includes(q));
+    });
+
+    const tbody = $("#bookings-body");
+    tbody.innerHTML = "";
+
+    if (!rows.length) {
+      const tr = document.createElement("tr");
+      const td = document.createElement("td");
+      td.colSpan = 6;
+      td.className = "empty";
+      td.innerHTML =
+        q || activeChannel !== "all"
+          ? '<div class="big">No bookings match</div><div>Try a different search or channel.</div>'
+          : '<div class="big">No bookings yet</div><div>Open a slot on the grid and confirm a test booking.</div>';
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+      return;
+    }
+
+    for (const b of rows) {
+      const tr = document.createElement("tr");
+      const when = new Date(b.slot_date + "T12:00:00");
+      const dateLabel = when.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" });
+      tr.innerHTML = `
+        <td><span class="mono">${dateLabel} · ${b.slot_time}</span></td>
+        <td class="name">${esc(b.customer_name)}</td>
+        <td><span class="mono">${esc(b.phone_number)}</span></td>
+        <td class="vehicle">${esc(b.vehicle_type)}</td>
+        <td><span class="badge badge--${b.channel === "voice" ? "voice" : "whatsapp"}">${esc(b.channel)}</span></td>
+        <td class="created">${timeAgo(b.created_at)}</td>`;
+      tbody.appendChild(tr);
+    }
+  }
+
+  function timeAgo(iso) {
+    const then = new Date(iso);
+    const diff = Math.max(0, Date.now() - then.getTime());
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return "just now";
+    if (mins < 60) return `${mins}m ago`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs}h ago`;
+    return then.toLocaleDateString([], { month: "short", day: "numeric" });
+  }
+
+  function render() {
+    renderStats();
+    renderGrid();
+    renderBookings();
+  }
+
+  // ---------- slot inspect modal ----------
+  let currentSlot = null;
+
+  function openSlotModal(slot, day) {
+    currentSlot = slot;
+    $("#slot-when").textContent = `${day.weekday} · ${day.month_day} · ${slot.time}`;
+    $("#slot-id").textContent = slot.id;
+    const stateEl = $("#slot-state");
+    const dl = $("#slot-details");
+    const freeBtn = $("#btn-free");
+
+    if (slot.status === "booked") {
+      const b = DATA.bookings.find((x) => x.slot_date === day.iso && x.slot_time === slot.time);
+      stateEl.textContent = "Booked";
+      stateEl.style.color = "var(--aqua)";
+      stateEl.style.background = "var(--aqua-tint)";
+      dl.innerHTML = b
+        ? `<dt>Customer</dt><dd>${esc(b.customer_name)}</dd>
+           <dt>Phone</dt><dd><span class="mono">${esc(b.phone_number)}</span></dd>
+           <dt>Vehicle</dt><dd>${esc(b.vehicle_type)}</dd>
+           <dt>Channel</dt><dd>${esc(b.channel)}</dd>
+           <dt>Booked</dt><dd>${timeAgo(b.created_at)}</dd>`
+        : "<dt></dt><dd>No booking record found.</dd>";
+      freeBtn.style.display = "";
+      freeBtn.textContent = "Free this slot";
+    } else if (slot.status === "held") {
+      stateEl.textContent = "Held";
+      stateEl.style.color = "var(--gold)";
+      stateEl.style.background = "color-mix(in srgb, var(--gold) 14%, transparent)";
+      dl.innerHTML = "<dt>Who</dt><dd>Waiting on details — no booking yet.</dd><dt>Note</dt><dd>Releases automatically after 10 minutes.</dd>";
+      freeBtn.style.display = "";
+      freeBtn.textContent = "Release hold";
+    } else {
+      stateEl.textContent = "Open";
+      stateEl.style.color = "var(--aqua)";
+      stateEl.style.background = "var(--aqua-tint)";
+      dl.innerHTML = "<dt>Who</dt><dd>Available to book.</dd>";
+      freeBtn.style.display = "none";
+    }
+
+    openOverlay("overlay-slot");
+  }
+
+  $("#btn-free").addEventListener("click", async () => {
+    if (!currentSlot) return;
+    const btn = $("#btn-free");
+    btn.disabled = true;
+    try {
+      const r = await api(`/admin/reset/${currentSlot.id}`, { method: "POST" });
+      if (r.success) {
+        toast(`Slot freed — #${currentSlot.id} is open again.`, "ok");
+        closeOverlay("overlay-slot");
+        load();
+      } else {
+        toast(r.reason || "Could not free that slot.", "err");
+      }
+    } catch (err) {
+      toast("Free failed: " + err.message, "err");
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  // ---------- test booking modal ----------
+  let heldSlotId = null;
+
+  function openTestModal(dateIso, time) {
+    heldSlotId = null;
+    $("#held-banner").style.display = "none";
+    $("#btn-confirm").disabled = true;
+    $("#btn-hold").disabled = false;
+    $("#btn-hold").textContent = "Hold slot";
+    populateDates(dateIso);
+    const dateSel = $("#t-date");
+    if (dateIso) dateSel.value = dateIso;
+    populateTimes(dateSel.value, time);
+    openOverlay("overlay-test");
+  }
+
+  function populateDates(preferred) {
+    const sel = $("#t-date");
+    sel.innerHTML = "";
+    for (const d of DATA.days) {
+      const o = document.createElement("option");
+      o.value = d.iso;
+      o.textContent = `${d.weekday} · ${d.month_day}${d.is_today ? " (today)" : ""}`;
+      sel.appendChild(o);
+    }
+    if (preferred) sel.value = preferred;
+  }
+
+  async function populateTimes(dateIso, preferred) {
+    const sel = $("#t-time");
+    sel.innerHTML = "";
+    sel.disabled = true;
+    try {
+      const slots = await api(`/slots?slot_date=${dateIso}`);
+      if (!slots.length) {
+        sel.innerHTML = '<option value="">No open slots this day</option>';
+      } else {
+        for (const s of slots) {
+          const o = document.createElement("option");
+          o.value = s.time;
+          o.textContent = s.time;
+          sel.appendChild(o);
+        }
+        if (preferred && slots.some((s) => s.time === preferred)) sel.value = preferred;
+      }
+    } catch {
+      sel.innerHTML = '<option value="">Could not load slots</option>';
+    } finally {
+      sel.disabled = false;
+    }
+  }
+
+  $("#t-date").addEventListener("change", (e) => {
+    heldSlotId = null;
+    $("#held-banner").style.display = "none";
+    $("#btn-confirm").disabled = true;
+    $("#btn-hold").textContent = "Hold slot";
+    populateTimes(e.target.value);
+  });
+
+  $("#btn-hold").addEventListener("click", async () => {
+    const time = $("#t-time").value;
+    const date = $("#t-date").value;
+    if (!time) { toast("Pick a time first.", "err"); return; }
+    const btn = $("#btn-hold");
+    btn.disabled = true;
+    try {
+      const day = DATA.days.find((d) => d.iso === date);
+      const slot = day.slots.find((s) => s.time === time);
+      if (!slot) { toast("That slot is no longer open — reloading.", "err"); load(); return; }
+      const r = await api("/hold", {
+        method: "POST",
+        body: JSON.stringify({ slot_id: slot.id }),
+      });
+      if (r.success) {
+        heldSlotId = slot.id;
+        const banner = $("#held-banner");
+        banner.style.display = "flex";
+        banner.innerHTML = `<span style="font-weight:700">Held ✓</span><span>${date} · ${r.slot_time}. Now confirm to book it.</span>`;
+        $("#btn-confirm").disabled = false;
+        toast(`Slot held — ${r.slot_date} at ${r.slot_time}.`, "info");
+      } else {
+        toast("That slot was just taken — pick another time.", "err");
+        load();
+      }
+    } catch (err) {
+      toast("Hold failed: " + err.message, "err");
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  $("#btn-confirm").addEventListener("click", async () => {
+    const name = $("#t-name").value.trim();
+    const phone = $("#t-phone").value.trim();
+    const vehicle = $("#t-vehicle").value.trim();
+    if (!name) { toast("Add the customer name.", "err"); $("#t-name").focus(); return; }
+    if (!phone) { toast("Add a phone number.", "err"); $("#t-phone").focus(); return; }
+    if (!vehicle) { toast("Add the vehicle type.", "err"); $("#t-vehicle").focus(); return; }
+    if (!heldSlotId) { toast("Hold the slot first.", "err"); return; }
+
+    const btn = $("#btn-confirm");
+    btn.disabled = true;
+    btn.textContent = "Confirming…";
+    const channel = document.querySelector('input[name="channel"]:checked').value;
+    try {
+      const r = await api("/confirm", {
+        method: "POST",
+        body: JSON.stringify({
+          slot_id: heldSlotId,
+          customer_name: name,
+          phone_number: phone,
+          vehicle_type: vehicle,
+          channel,
+        }),
+      });
+      if (r.success) {
+        toast(`Booked — ${name}, ${r.slot_date} at ${r.slot_time}.`, "ok");
+        closeOverlay("overlay-test");
+        load();
+      } else {
+        toast("Confirm failed — the hold expired or was taken. Try again.", "err");
+        load();
+      }
+    } catch (err) {
+      toast("Confirm failed: " + err.message, "err");
+    } finally {
+      btn.textContent = "Confirm booking";
+      btn.disabled = false;
+    }
+  });
+
+  // ---------- overlays ----------
+  function openOverlay(id) {
+    $(`#${id}`).classList.add("is-open");
+    $(`#${id}`).querySelector("input, select, button")?.focus();
+  }
+  function closeOverlay(id) {
+    $(`#${id}`).classList.remove("is-open");
+  }
+
+  document.querySelectorAll("[data-close]").forEach((btn) => {
+    btn.addEventListener("click", () => closeOverlay(btn.dataset.close));
+  });
+  document.querySelectorAll(".overlay").forEach((ov) => {
+    ov.addEventListener("click", (e) => { if (e.target === ov) ov.classList.remove("is-open"); });
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      document.querySelectorAll(".overlay.is-open").forEach((ov) => ov.classList.remove("is-open"));
+    }
+  });
+
+  $("#btn-test").addEventListener("click", () => openTestModal());
+  $("#btn-retry").addEventListener("click", () => load());
+
+  // ---------- toolbar ----------
+  $("#search").addEventListener("input", renderBookings);
+
+  $("#channel-chips").addEventListener("click", (e) => {
+    const chip = e.target.closest(".chip");
+    if (!chip) return;
+    document.querySelectorAll("#channel-chips .chip").forEach((c) => c.classList.remove("is-active"));
+    chip.classList.add("is-active");
+    activeChannel = chip.dataset.channel;
+    renderBookings();
+  });
+
+  // ---------- start ----------
+  load();
+  setInterval(load, 45000);
+})();
+</script>
+</body>
+</html>
